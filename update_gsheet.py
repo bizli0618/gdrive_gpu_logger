@@ -37,7 +37,7 @@ for i in range(nv.nvmlDeviceGetCount()):
     temp = nv.nvmlDeviceGetTemperature(h, nv.NVML_TEMPERATURE_GPU)
     rows.append([
         now, host, i, util,
-        round(gpu_mem.used/(1.0 * (1024 ** 3),3), round(gpu_mem.total/(1.0 * (1024 ** 3),3), temp, name
+        round(gpu_mem.used/(1.0 * (1024 ** 3)),3), round(gpu_mem.total/(1.0 * (1024 ** 3)),3), temp, name
     ])
 
 # Batch append (1 API call even for many GPUs)
