@@ -59,7 +59,7 @@ for i in range(nv.nvmlDeviceGetCount()):
 # Batch append (1 API call even for many GPUs)
 start_row = int(os.environ.get("ROW"))
 end_row = start_row + len(rows) - 1
-range_str = f"A{start_row}:H{end_row}"  # adjust H to your last column
+range_str = f"A{start_row}:J{end_row}"  # adjust H to your last column
 
 
 if rows:
