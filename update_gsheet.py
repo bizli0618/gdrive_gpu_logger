@@ -35,9 +35,25 @@ for i in range(nv.nvmlDeviceGetCount()):
     util = nv.nvmlDeviceGetUtilizationRates(h).gpu
     gpu_mem  = nv.nvmlDeviceGetMemoryInfo(h)
     temp = nv.nvmlDeviceGetTemperature(h, nv.NVML_TEMPERATURE_GPU)
+
+    try:
+        power_w = nv.nvmlDeviceGetPowerUsage(h) / 1000.0
+    except nv.NVMLError_NotSupported:
+        power_w = "N/A"
+
+    # Power cap (what’s actually enforced right now)
+    try:
+        power_cap_w = nv.nvmlDeviceGetEnforcedPowerLimit(h) / 1000.0
+    except nv.NVMLError_NotSupported:
+        power_cap_w = "N/A"
+
+    # head
+    # Update	Server	IDX	Util (%)	VRAM used	VRAM total	Temp	P (Usage)	P (Limit)	Type
+    
     rows.append([
         now, host, i, util,
-        round(gpu_mem.used/(1.0 * (1024 ** 3)),3), round(gpu_mem.total/(1.0 * (1024 ** 3)),3), temp, name
+        round(gpu_mem.used/(1.0 * (1024 ** 3)),3), round(gpu_mem.total/(1.0 * (1024 ** 3)),3),
+        temp, power_w, power_cap_w, name
     ])
 
 # Batch append (1 API call even for many GPUs)
