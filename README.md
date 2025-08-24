@@ -10,3 +10,4 @@ Simple GPU-usage logger based on Google Cloud API
   ```pip install pynvml psutil gspread google-auth pytz```
 * Without using python virtual enviornment we encountered an error related to external package restrictions. We used the following command to resolve the problem:  
   ```python3 -m pip config set global.break-system-packages true``` 
+* We used a tmux session to run the script (run.sh) in the background.
