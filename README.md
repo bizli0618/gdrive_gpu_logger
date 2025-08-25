@@ -23,4 +23,7 @@ worksheets:
 | `SHEET_TAB_USERS` | Worksheet for `internal` servers (default `GPU_USERS`) |
 | `SHEET_TAB_PROCS` | Worksheet for `external` servers (default `GPU_PROCS`) |
 
-See `run.sh` for an example of the required environment variables.
+These variables specify the names of the worksheet tabs (not user names).
+If a tab does not exist, it will be created automatically with the
+appropriate headers. See `run.sh` for an example of the required
+environment variables.
