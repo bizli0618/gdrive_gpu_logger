@@ -24,7 +24,13 @@ import gspread
 import psutil
 import pynvml as nv
 import pytz
+import pytz
 from google.oauth2.service_account import Credentials
+
+
+# ---------------------------------------------------------------------------
+# Configuration & Google Sheet access
+# ---------------------------------------------------------------------------
 
 
 # ---------------------------------------------------------------------------
@@ -76,6 +82,31 @@ except gspread.exceptions.WorksheetNotFound:  # pragma: no cover - requires remo
         ]
         ws = sh.add_worksheet(title=tab_name, rows=1000, cols=len(header))
     ws.append_row(header)
+
+
+# ---------------------------------------------------------------------------
+# GPU information gathering
+# ---------------------------------------------------------------------------
+
+
+SERVER_TYPE = os.environ.get("SERVER_TYPE", "internal").lower()
+if SERVER_TYPE not in {"internal", "external"}:
+    raise ValueError("SERVER_TYPE must be 'internal' or 'external'")
+
+SHEET_ID = os.environ.get("SHEET_ID")
+SA_JSON = os.environ.get("GOOGLE_APPLICATION_CREDENTIALS")
+TAB_USERS = os.environ.get("SHEET_TAB_USERS", "GPU_USERS")
+TAB_PROCS = os.environ.get("SHEET_TAB_PROCS", "GPU_PROCS")
+
+scopes = ["https://www.googleapis.com/auth/spreadsheets"]
+creds = Credentials.from_service_account_file(SA_JSON, scopes=scopes)
+gc = gspread.authorize(creds)
+sh = gc.open_by_key(SHEET_ID)
+tab_name = TAB_USERS if SERVER_TYPE == "internal" else TAB_PROCS
+try:
+    ws = sh.worksheet(tab_name)
+except gspread.exceptions.WorksheetNotFound as exc:  # pragma: no cover - requires remote sheet
+    raise RuntimeError(f"Worksheet {tab_name} not found") from exc
 
 
 # ---------------------------------------------------------------------------
@@ -135,6 +166,7 @@ nv.nvmlShutdown()
 
 start_row = int(os.environ.get("ROW", "2"))
 end_row = start_row + len(rows) - 1
+range_str = f"A{start_row}:J{end_row}"  # adjust H to your last column
 
 if SERVER_TYPE == "internal":
     range_str = f"A{start_row}:G{end_row}"
