@@ -24,13 +24,7 @@ import gspread
 import psutil
 import pynvml as nv
 import pytz
-import pytz
 from google.oauth2.service_account import Credentials
-
-
-# ---------------------------------------------------------------------------
-# Configuration & Google Sheet access
-# ---------------------------------------------------------------------------
 
 
 # ---------------------------------------------------------------------------
@@ -105,8 +99,6 @@ sh = gc.open_by_key(SHEET_ID)
 tab_name = TAB_USERS if SERVER_TYPE == "internal" else TAB_PROCS
 try:
     ws = sh.worksheet(tab_name)
-except gspread.exceptions.WorksheetNotFound as exc:  # pragma: no cover - requires remote sheet
-    raise RuntimeError(f"Worksheet {tab_name} not found") from exc
 
 
 # ---------------------------------------------------------------------------
@@ -166,7 +158,6 @@ nv.nvmlShutdown()
 
 start_row = int(os.environ.get("ROW", "2"))
 end_row = start_row + len(rows) - 1
-range_str = f"A{start_row}:J{end_row}"  # adjust H to your last column
 
 if SERVER_TYPE == "internal":
     range_str = f"A{start_row}:G{end_row}"
